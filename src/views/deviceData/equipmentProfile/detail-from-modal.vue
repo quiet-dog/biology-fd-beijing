@@ -172,6 +172,37 @@
             <el-table-column prop="inspector" label="检修人员" align="center" />
           </el-table>
         </el-tab-pane>
+        <el-tab-pane label="历史数据" name="fourth">
+          <el-form>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="传感器">
+                  <el-select @change="getHistoryData" v-model="selectSensorId">
+                    <el-option
+                      v-for="item in sensorOptions"
+                      :key="item.thresholdId"
+                      :label="item.sensorName"
+                      :value="item.thresholdId"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="时间">
+                  <el-date-picker
+                    v-model="historyDate"
+                    value-format="YYYY-MM-DD"
+                    @change="handleHistoryDateChange"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+          <div
+            ref="historyDataRef"
+            style="width: 900px; height: 500px; margin: auto"
+          />
+        </el-tab-pane>
       </el-tabs>
     </div>
   </v-detail-dialog>
@@ -188,6 +219,11 @@ import {
 } from "@/api/deviceData/WeiXiuRecords";
 import { inspectionRes, inspectionList } from "@/api/deviceData/JianXiuRecords";
 import dayjs from "dayjs";
+import {
+  getThresholdDataHistory,
+  thresholdList
+} from "@/api/alarmPlatform/thresholdSetting";
+import * as echarts from "echarts";
 
 const visible = ref(false);
 const loading = ref(false);
@@ -263,24 +299,106 @@ const handleTabChange = async val => {
     case "third":
       await jianxiuList();
       break;
+    case "fourth":
+      await getHistoryData();
+      break;
     default:
       break;
   }
 };
 
-const handleOpened = (id: number) => {
+const handleOpened = async (id: number) => {
   if (!id) {
     return;
   }
   equipmentId.value = id;
   visible.value = true;
+  historyDate.value = dayjs().format("YYYY-MM-DD");
   equipmentInfofun();
+  await getSensorOptions();
+  getHistoryData();
 };
 
 function cancelConfirm() {
   visible.value = false;
   formRef.value?.resetFields();
   activeName.value = "first";
+}
+
+// 宽高沾满
+const option = {
+  title: {
+    text: "历史数据",
+    left: "center"
+  },
+  tooltip: {
+    trigger: "axis",
+    formatter: function (params) {
+      // params 是一个数组，通常只有一个系列
+      const data = params[0];
+      return data.axisValue + ": " + data.data + unit.value;
+    }
+  },
+  xAxis: {
+    type: "category",
+    data: [],
+    boundaryGap: false
+  },
+  yAxis: {
+    type: "value"
+  },
+  series: [
+    {
+      name: "数值",
+      type: "line",
+      data: [],
+      smooth: true, // 平滑曲线
+      lineStyle: {
+        width: 3
+      },
+      itemStyle: {
+        color: "#5470C6"
+      },
+      areaStyle: {
+        color: "rgba(84,112,198,0.2)" // 区域渐变
+      }
+    }
+  ]
+};
+const historyDataRef = ref();
+let historyDataEcharts: any = null;
+const historyDate = ref("");
+const unit = ref("");
+function handleHistoryDateChange(_val) {
+  getHistoryData();
+}
+async function getHistoryData() {
+  getThresholdDataHistory({
+    thresholdId: selectSensorId.value,
+    dayTime: historyDate.value
+  }).then(res => {
+    if (historyDataEcharts == null) {
+      historyDataEcharts = echarts.init(historyDataRef.value);
+    }
+    option.xAxis.data = res.data.xData;
+    option.series[0].data = res.data.yData;
+    unit.value = res.data.unit;
+    historyDataEcharts.setOption(option, true);
+  });
+}
+const sensorOptions = ref([]);
+const selectSensorId = ref(0);
+async function getSensorOptions() {
+  thresholdList({
+    pageNum: 1,
+    pageSize: 999,
+    equipmentId: equipmentId.value
+  }).then(res => {
+    sensorOptions.value = res.data.rows;
+    if (sensorOptions.value.length > 0) {
+      selectSensorId.value = sensorOptions.value[0].thresholdId;
+    }
+  });
 }
 
 defineExpose({

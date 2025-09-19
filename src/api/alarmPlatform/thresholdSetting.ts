@@ -40,6 +40,12 @@ export function thresholdList(params: thresholdListRes) {
   return http.request("get", "/manage/threshold", { params });
 }
 
+export function getThresholdDataHistory(data: any) {
+  return http.request("post", "/manage/equipment-data/historyData", {
+    data: data
+  });
+}
+
 //添加阈值设置
 export interface addthresholdRes {
   equipmentId: number;
