@@ -116,7 +116,7 @@ useResizeObserver(appWrapperRef, entries => {
 
 // WebSocket客户端配置
 const stompClient = new Client({
-  brokerURL:"/ws-api/ws"
+  brokerURL: "/ws-api/ws"
 });
 const audu = ref();
 stompClient.onConnect = frame => {
@@ -175,7 +175,6 @@ stompClient.onStompError = frame => {
   console.error("Additional details: " + frame.body);
 };
 
-
 // 在现有的onMounted中添加WebSocket激活
 onMounted(() => {
   if (isMobile) {
@@ -196,7 +195,7 @@ onMounted(() => {
   //   audu.value.play().catch(err => {
   //     console.log(err);
   //   });
-  // }, 5000); 
+  // }, 5000);
 });
 
 onBeforeMount(() => {
@@ -223,9 +222,9 @@ const layoutHeader = defineComponent({
           !pureSetting.hiddenSideBar &&
           (layout.value.includes("vertical") || layout.value.includes("mix"))
             ? h(navbar, {
-              ref: navbarRef,
-              ref_key: "navbarRef",
-            })
+                ref: navbarRef,
+                ref_key: "navbarRef"
+              })
             : null,
           !pureSetting.hiddenSideBar && layout.value.includes("horizontal")
             ? h(Horizontal)
@@ -280,9 +279,9 @@ const layoutHeader = defineComponent({
     </div>
     <!-- 系统设置 -->
     <!-- <setting /> -->
-     <audio style="display: none;" controls  ref="audu">
+    <audio style="display: none" controls ref="audu">
       <source :src="Vide" type="audio/mpeg" />
-     </audio>
+    </audio>
   </div>
 </template>
 

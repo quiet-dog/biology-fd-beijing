@@ -216,14 +216,19 @@ const getStockStyle = row => {
   };
 
   const stock = row.stock;
+  console.log(row.materials);
   for (const value of row.materials.values) {
-   
     const isTriggered =
-      (value.scondition === "小于等于" && stock <= value.value) ||
-      (value.scondition === "大于等于" && stock >= value.value) ||
-      (value.scondition === "大于等于" && stock >= value.value) ||
-      (value.scondition === "小于" && stock < value.value) ||
-      (value.scondition === "大于" && stock > value.value);
+      (value.scondition === "小于等于" &&
+        stock / row.materials?.total <= value.value) ||
+      (value.scondition === "大于等于" &&
+        stock / row.materials?.total >= value.value) ||
+      (value.scondition === "大于等于" &&
+        stock / row.materials?.total >= value.value) ||
+      (value.scondition === "小于" &&
+        stock / row.materials?.total < value.value) ||
+      (value.scondition === "大于" &&
+        stock / row.materials?.total > value.value);
 
     if (isTriggered) {
       return { color: getColorByLevel(value.level) };

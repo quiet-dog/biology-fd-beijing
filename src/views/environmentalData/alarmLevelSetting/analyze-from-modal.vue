@@ -18,9 +18,13 @@
             @change="selectChange"
             style="width: 240px"
           >
-          <div v-infinite-scroll="loadArchiveListFun">
-              <el-option v-for="item in dataList" :key="item.detectionId"
-                :label="`${item.environment.description} - ${item.environment.unitName}`" :value="item.detectionId" />
+            <div v-infinite-scroll="loadArchiveListFun">
+              <el-option
+                v-for="item in dataList"
+                :key="item.detectionId"
+                :label="`${item.description} - ${item.unitName}`"
+                :value="item.environmentId"
+              />
             </div>
           </el-select>
         </el-form-item>
@@ -46,13 +50,17 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { FormInstance } from "element-plus";
 import VDetailDialog from "@/components/VDetailDialog/VDetailDialog.vue";
 import * as echarts from "echarts";
-import { detectionList } from "@/api/environmentalData/alarmLevelSetting";
+import {
+  detectionList,
+  getHistoryDataByEnvironmentId
+} from "@/api/environmentalData/alarmLevelSetting";
 import dayjs from "dayjs";
+import { environmentalFilesList } from "@/api/environmentalData/environmentalArchives";
 
 const visible = ref(false);
 const formRef = ref<FormInstance>();
 
-const myChart = ref(null);
+let myChart = null;
 const chartRef = ref();
 const option = {
   grid: {
@@ -64,12 +72,10 @@ const option = {
   },
   tooltip: {},
   xAxis: {
-    type: "time",
-    axisLabel: {
-      formatter: value => {
-        return dayjs(value).format("HH:mm:ss");
-      }
-    }
+    type: "category",
+
+    data: [],
+    boundaryGap: false
   },
   yAxis: {
     type: "value",
@@ -80,7 +86,18 @@ const option = {
       name: "数值",
       type: "line",
       data: [],
-      itemStyle: { color: "#409EFF" }
+      smooth: true, // 平滑折线
+      label: {
+        show: true,
+        position: "top",
+        formatter: "{c}" // 显示数值
+      },
+      lineStyle: {
+        width: 2
+      },
+      itemStyle: {
+        color: "#3A77FF"
+      }
     }
   ]
 };
@@ -95,7 +112,8 @@ const formData = ref({
 
 const form = ref({
   pageSize: 10,
-  pageNum: 1
+  pageNum: 1,
+  total: 0
 });
 
 const dataList = ref([]);
@@ -116,60 +134,81 @@ interface DetectionResponse {
   };
 }
 
+// const environmentQuery = ref({
+//   pageNum: 1,
+//   pageSize: 10,
+//   total: 0
+// });
 const archiveListFun = async () => {
-  const { data } = (await detectionList({
-    ...form.value,
-    description: "",
-    tag: ""
-  })) as DetectionResponse;
-  const uniqueMap = new Map();
-  if (data.rows && data.rows.length > 0) {
-    dataList.value.push(...data.rows.reduce((acc, item) => {
-      if (!uniqueMap.has(item.detectionId)) {
-        uniqueMap.set(item.detectionId, true);
-        acc.push({
-          detectionId: item.detectionId,
-          environment: item.environment
-        });
-      }
-      return acc;
-    }, []));
-  }
+  // const { data } = (await detectionList({
+  //   ...form.value,
+  //   description: "",
+  //   tag: ""
+  // })) as DetectionResponse;
+  // const uniqueMap = new Map();
+  // if (data.rows && data.rows.length > 0) {
+  //   dataList.value.push(
+  //     ...data.rows.reduce((acc, item) => {
+  //       if (!uniqueMap.has(item.detectionId)) {
+  //         uniqueMap.set(item.detectionId, true);
+  //         acc.push({
+  //           detectionId: item.detectionId,
+  //           environment: item.environment
+  //         });
+  //       }
+  //       return acc;
+  //     }, [])
+  //   );
+  // }
+
+  const { data } = await environmentalFilesList(form.value);
+  form.value.total = data.total;
+  dataList.value = [...dataList.value, ...data.rows];
 };
 
 const detectionDataFun = async () => {
-  const currentEnv = dataList.value.find(
-    item => item.detectionId === formData.value.detectionId
-  )?.environment;
-
-  const { data } = (await detectionList({
-    description: currentEnv.description,
-    pageSize: 10000,
-    pageNum: 1,
-    startCreateTime: dayjs(formData.value.beginTime).format("YYYY-MM-DD"),
-    tag: ""
-  })) as DetectionResponse;
-
-  // 过滤出当前环境的数据
-  const filteredData = data.rows
-    .filter(item => item.environmentId === currentEnv.environmentId)
-    .map(item => [item.createTime, item.value])
-    .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime());
+  if (
+    formData.value.detectionId == undefined ||
+    formData.value.detectionId == null ||
+    formData.value.detectionId == 0
+  ) {
+    return;
+  }
+  getHistoryDataByEnvironmentId({
+    environmentId: formData.value.detectionId,
+    beginTime: dayjs(formData.value.beginTime).format("YYYY-MM-DD")
+  }).then(res => {
+    option.series[0].data = res.data.yData;
+    option.xAxis.data = res.data.xData;
+    // option.yAxis.min = 1;
+    // if (res.data.xData.every(item => item === null)) {
+    //   option.yAxis.max = 6;
+    // } else {
+    //   option.yAxis.max = Math.max(...res.data.xData, 6);
+    // }
+    // 初始化或更新图表
+    if (myChart == null) {
+      myChart = echarts.init(chartRef.value);
+    }
+    myChart.setOption(option, true);
+  });
 
   // 更新图表数据
-  option.series[0].data = filteredData;
 
   // 初始化或更新图表
-  if (!myChart.value) {
-    myChart.value = echarts.init(chartRef.value);
+  if (myChart == null) {
+    myChart = echarts.init(chartRef.value);
   }
-  myChart.value.setOption(option);
+  myChart.setOption(option, true);
 };
 
 const loadArchiveListFun = () => {
+  if (form.value.pageNum * 10 > form.value.total) {
+    return;
+  }
   form.value.pageNum++;
   archiveListFun();
-}
+};
 
 const handleOpened = async () => {
   visible.value = true;

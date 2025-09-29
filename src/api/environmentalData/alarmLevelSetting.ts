@@ -8,6 +8,14 @@ export function detectionList(params: detectionListRes) {
   return http.request("get", "/manage/detection", { params });
 }
 
+export function getHistoryDataByEnvironmentId(params: detectionListRes) {
+  return http.request(
+    "get",
+    "/manage/detection/getHistoryDataByEnvironmentId",
+    { params }
+  );
+}
+
 export function getstatistics(detectionId: number, params: any) {
   return http.request("get", `/manage/detection/data/${detectionId}`, {
     params: params
@@ -19,18 +27,14 @@ export function unitNameAndArea(params: any) {
   return http.request("get", "/manage/detection/unitNameAndArea", { params });
 }
 
-
 export function getNormalMaterails() {
   return http.request("get", "/manage/materials/getAllNormal");
-
 }
 
 // /manage/detection/allGroup
 export function allGroup() {
   return http.request("get", "/manage/environment/allGroup");
 }
-
-
 
 export function getBuTongApi(data) {
   return http.request("post", "/manage/detection/getBuTong", {
@@ -41,7 +45,6 @@ export function getBuTongApi(data) {
 export function getNenghaoList(params) {
   return http.request("get", "/manage/detection/getNenghao", { params });
 }
-
 
 export function getTongJiNenghaoApi(params: detectionListRes) {
   return http.request("get", "/manage/detection/getTongJiNenghao", { params });

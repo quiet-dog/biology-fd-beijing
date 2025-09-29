@@ -172,7 +172,7 @@
             <el-table-column prop="inspector" label="检修人员" align="center" />
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="历史数据" name="fourth">
+        <!-- <el-tab-pane label="历史数据" name="fourth">
           <el-form>
             <el-row>
               <el-col :span="12">
@@ -202,7 +202,7 @@
             ref="historyDataRef"
             style="width: 900px; height: 500px; margin: auto"
           />
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
     </div>
   </v-detail-dialog>

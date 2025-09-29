@@ -56,12 +56,18 @@
         > -->
         <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <el-dropdown>
-          <el-button type="warning" :icon="Download" >报告导出</el-button>
+          <el-button type="warning" :icon="Download">报告导出</el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="exportClick('excel')">excel</el-dropdown-item>
-              <el-dropdown-item @click="exportClick('word')">word</el-dropdown-item>
-              <el-dropdown-item @click="exportClick('pdf')">pdf</el-dropdown-item>
+              <el-dropdown-item @click="exportClick('excel')"
+                >excel</el-dropdown-item
+              >
+              <el-dropdown-item @click="exportClick('word')"
+                >word</el-dropdown-item
+              >
+              <el-dropdown-item @click="exportClick('pdf')"
+                >pdf</el-dropdown-item
+              >
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -110,7 +116,7 @@
               link
               type="primary"
               :size="size"
-              @click="openDialog('update',row)"
+              @click="openDialog('update', row)"
             >
               编辑
             </el-button>
@@ -153,7 +159,11 @@ import {
 } from "@/api/environmentalData/environmentalArchives";
 import { Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
-import { ExportDownload, ExportPdfDownload, ExportWordDownload } from "@/utils/exportdownload";
+import {
+  ExportDownload,
+  ExportPdfDownload,
+  ExportWordDownload
+} from "@/utils/exportdownload";
 import { Plus, Refresh, Search, Download } from "@element-plus/icons-vue";
 import addEditFormModal from "./addedit-form-modal.vue";
 import thresholdFormModal from "./threshold-form-modal.vue";
@@ -244,7 +254,7 @@ const searchFormParams = reactive<environmentalFilesListRes>({
   description: "",
   tag: "",
   environmentIds: [],
-  exportType: "pdf",
+  exportType: "pdf"
 });
 
 const pagination: PaginationProps = {
@@ -288,7 +298,11 @@ const exportClick = (type: string) => {
   }
 
   exportEnvironmentalFiles(
-    toRaw({ ...searchFormParams, environmentIds: multipleSelection.value,exportType:type })
+    toRaw({
+      ...searchFormParams,
+      environmentIds: multipleSelection.value,
+      exportType: type
+    })
   ).then(res => {
     if (type == "pdf") {
       ExportPdfDownload(res, "环境检测");
@@ -303,7 +317,7 @@ const exportClick = (type: string) => {
 const opType = ref<"add" | "update">("add");
 const modalVisible = ref(false);
 const opRows = ref();
-function openDialog(type: "add" | "update",row) {
+function openDialog(type: "add" | "update", row) {
   opType.value = type;
   modalVisible.value = true;
   opRows.value = row;

@@ -24,8 +24,8 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="位号：">
-            <el-input v-model="formData.tag" readonly />
+          <el-form-item label="单位：">
+            <el-input v-model="formData.unit" readonly />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -58,9 +58,18 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="区域：">
-        <el-input v-model="formData.earea" readonly />
-      </el-form-item>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="位号：">
+            <el-input v-model="formData.tag" readonly />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="区域：">
+            <el-input v-model="formData.earea" readonly />
+          </el-form-item>
+        </el-col>
+      </el-row>
       <!-- <el-form-item label="应急预案：">
         <el-select
           v-model="formData.emergencyIds"
@@ -195,7 +204,7 @@ function handleOpened() {
       sopIds
     });
   }
-  
+
   emergencyListFun();
   sopListFun();
 }

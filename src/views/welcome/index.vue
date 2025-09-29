@@ -80,7 +80,7 @@ const notificationListFun = async () => {
     orderColumn: "createTime",
     orderDirection: "descending",
     pageNum: 1,
-    pageSize: 10000
+    pageSize: 100
   });
 
   nlist.value = data.rows;
@@ -108,13 +108,13 @@ const list2 = ref([
     name: "离线设备",
     num: "0",
     baifen: "0%"
-  },
-  {
-    color: "#C7E2FE",
-    name: "异常设备",
-    num: "0",
-    baifen: "0%"
   }
+  // {
+  //   color: "#C7E2FE",
+  //   name: "异常设备",
+  //   num: "0",
+  //   baifen: "0%"
+  // }
 ]);
 
 let environmentChart: any = null;
@@ -185,6 +185,7 @@ const environmentoption = {
 let equipmentStatusChart: any = null;
 const equipmentStatusRef = ref();
 const equipmentStatusoption = {
+  color: ["#3FD599", "#3A77FF"],
   title: {
     text: "设备状态",
     top: "5%",
@@ -225,30 +226,30 @@ const equipmentStatusoption = {
         show: false
       },
       data: [
-        {
-          value: 1048,
-          itemStyle: {
-            color: "#3FD599"
-          }
-        },
-        {
-          value: 735,
-          itemStyle: {
-            color: "#3A77FF"
-          }
-        },
-        {
-          value: 580,
-          itemStyle: {
-            color: "#C7E2FE"
-          }
-        },
-        {
-          value: 484,
-          itemStyle: {
-            color: "#F1F4FF"
-          }
-        }
+        // {
+        //   value: 1048,
+        //   itemStyle: {
+        //     color: "#3FD599"
+        //   }
+        // },
+        // {
+        //   value: 735,
+        //   itemStyle: {
+        //     color: "#3A77FF"
+        //   }
+        // },
+        // {
+        //   value: 580,
+        //   itemStyle: {
+        //     color: "#C7E2FE"
+        //   }
+        // },
+        // {
+        //   value: 484,
+        //   itemStyle: {
+        //     color: "#F1F4FF"
+        //   }
+        // }
       ]
     }
   ],
@@ -406,14 +407,14 @@ const getMaterialsEasyList = () => {
 };
 
 onMounted(async () => {
-  if (environmentRef.value) {
+  if (environmentChart == null) {
     environmentChart = echarts.init(environmentRef.value);
-    environmentChart.setOption(environmentoption);
   }
-  if (equipmentStatusRef.value) {
+  environmentChart.setOption(environmentoption, true);
+  if (equipmentStatusChart == null) {
     equipmentStatusChart = echarts.init(equipmentStatusRef.value);
-    equipmentStatusChart.setOption(equipmentStatusoption);
   }
+  equipmentStatusChart.setOption(equipmentStatusoption, true);
   notificationListFun();
 
   const res = await allGroup();
@@ -470,36 +471,34 @@ const getThresholdOnlineFun = async () => {
     {
       color: "#3FD599",
       name: "在线设备",
-      num: data.onlineCount,
-      baifen: `${Math.round((data.onlineCount / total) * 100)}%`
+      num: data.onlineCount + data.exceptionCount,
+      baifen: `${Math.round(
+        ((data.onlineCount + data.exceptionCount) / total) * 100
+      )}%`
     },
     {
       color: "#3A77FF",
       name: "离线设备",
       num: data.offlineCount.toString(),
       baifen: `${Math.round((data.offlineCount / total) * 100)}%`
-    },
-    {
-      color: "#C7E2FE",
-      name: "异常设备",
-      num: data.exceptionCount.toString(),
-      baifen: `${Math.round((data.exceptionCount / total) * 100)}%`
     }
+    // {
+    //   color: "#C7E2FE",
+    //   name: "异常设备",
+    //   num: data.exceptionCount.toString(),
+    //   baifen: `${Math.round((data.exceptionCount / total) * 100)}%`
+    // }
   ];
 
   // 更新饼图数据
   equipmentStatusoption.series[0].data = [
     {
-      value: data.onlineCount,
+      value: data.onlineCount + data.exceptionCount,
       itemStyle: { color: "#3FD599" }
     },
     {
       value: data.offlineCount,
       itemStyle: { color: "#3A77FF" }
-    },
-    {
-      value: data.exceptionCount,
-      itemStyle: { color: "#C7E2FE" }
     }
   ];
 
@@ -507,7 +506,7 @@ const getThresholdOnlineFun = async () => {
   equipmentStatusoption.graphic.style.text = `${total}\n设备总量`;
 
   // 重新渲染图表
-  equipmentStatusChart.setOption(equipmentStatusoption);
+  equipmentStatusChart.setOption(equipmentStatusoption, true);
 };
 
 const unitNameAndAreaFun = async () => {
@@ -571,14 +570,12 @@ const toPath = item => {
           <div class="home_t_lt_l">
             <div class="home_t_lt_l_title">{{ shangwu }}好！系统管理员</div>
             <div class="home_t_lt_l_bottom">
-              <div
-                class="home_t_lt_l_bottom_nei"
-                @click="
+              <!--  @click="
                   router.push({
-                    path: '/personnelData/accessControlRecords/index'
+                    path: '/personnelData/chuqin/index'
                   })
-                "
-              >
+                " -->
+              <div class="home_t_lt_l_bottom_nei">
                 <img src="/src/assets/images/renyuan1.png" alt="" />
                 <div class="home_t_lt_l_bottom_nei_right">
                   <div>
@@ -618,7 +615,7 @@ const toPath = item => {
                     <ElPopover @before-enter="getEquipmentStatus" width="300">
                       <template #reference>
                         <div>
-                          {{ Number(list2[0].num) + Number(list2[2].num) }}
+                          {{ Number(list2[0].num) }}
                         </div>
                       </template>
                       <ElTable height="500" :data="onlineEquipment">
@@ -754,7 +751,15 @@ const toPath = item => {
                         text-overflow: ellipsis;
                       "
                     >
-                      {{ item.content }}
+                      <span class="notice-item-content">
+                        <span>
+                          {{ item.content }}
+                        </span>
+                        &nbsp; &nbsp; &nbsp;
+                        <span>
+                          {{ item.time }}
+                        </span>
+                      </span>
                     </span>
                   </el-tooltip>
                 </div>
@@ -773,16 +778,22 @@ const toPath = item => {
       >
         <div class="equipmentStatus" ref="equipmentStatusRef" />
         <div class="home_t_rb">
-          <div class="home_t_rb_nei" v-for="item in list2" :key="item.name">
+          <template v-for="item in list2" :key="item.name">
             <div
-              :style="{
-                background: item.color
-              }"
-            />
-            <div>{{ item.name }}</div>
-            <div>{{ item.baifen }}</div>
-            <div>{{ item.num }}</div>
-          </div>
+              class="home_t_rb_nei"
+              v-if="item.name != '异常设备'"
+              :key="item.name"
+            >
+              <div
+                :style="{
+                  background: item.color
+                }"
+              />
+              <div>{{ item.name }}</div>
+              <div>{{ item.baifen }}</div>
+              <div>{{ item.num }}</div>
+            </div>
+          </template>
         </div>
       </el-card>
     </div>
@@ -1196,6 +1207,32 @@ $design-height: 1080;
       font-size: 12px;
       white-space: nowrap;
     }
+  }
+}
+
+// box-item 下面的span适配笔记本的宽度,让时间那个span固定宽就行,
+.notice-item-content {
+  display: flex;
+  // 横向
+  flex-wrap: wrap;
+
+  span:nth-child(1) {
+    // flex: 1;
+    // 超过行后省略号
+    max-width: 300px;
+    /* 关键：允许收缩 */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  span:last-child {
+    // 如果这一行放不下,换行
+    margin-left: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-wrap: wrap;
   }
 }
 </style>

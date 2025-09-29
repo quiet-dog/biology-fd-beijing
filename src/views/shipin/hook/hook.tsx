@@ -3,20 +3,19 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { ChannelQuery, getChannelListApi } from "@/api/video";
 import { PaginationProps } from "@pureadmin/table";
 
-
 type filter = {
   field_name: string;
   opertator: string;
   value: string;
-}
+};
 
 export function useVideoHook() {
   const form = reactive<ChannelQuery>({
     sort: "",
     name: ""
   });
-  const formEl = ref()
-  const playUrl = ref("")
+  const formEl = ref();
+  const playUrl = ref("");
 
   const columns: TableColumnList = [
     {
@@ -57,8 +56,8 @@ export function useVideoHook() {
   });
   const dialogOb = ref({
     visible: false,
-    title: "",
-  })
+    title: ""
+  });
 
   async function onSearch() {
     try {
@@ -81,15 +80,13 @@ export function useVideoHook() {
     onSearch();
   }
 
-
-
   const resetForm = formEl => {
     if (!formEl) return;
     formEl.resetFields();
     onSearch();
   };
 
-  onMounted(onSearch)
+  onMounted(onSearch);
 
   return {
     form,
@@ -102,5 +99,5 @@ export function useVideoHook() {
     handlePageChange,
     dialogOb,
     playUrl
-  }
+  };
 }

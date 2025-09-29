@@ -183,7 +183,6 @@ const analyzeFormModalClick = () => {
   analyzeFormModalRef.value.handleOpened();
 };
 
-
 const toAnalyzeFormModalRef = ref();
 const toAnalyzeFormModalClick = () => {
   toAnalyzeFormModalRef.value.handleOpened();

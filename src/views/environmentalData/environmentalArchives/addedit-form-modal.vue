@@ -16,7 +16,7 @@ import {
 interface Props {
   type: "add" | "update";
   modelValue: boolean;
-  row?: any
+  row?: any;
 }
 
 const rules: FormRules = {
@@ -141,9 +141,8 @@ function handleConfirm() {
         loading.value = true;
         if (props.type != "update") {
           await addenvironmental(formData);
-
         } else {
-          await editenvironmental(formData)
+          await editenvironmental(formData);
         }
         ElMessage.success("提交成功");
         visible.value = false;
@@ -190,7 +189,7 @@ function handleOpened() {
   sopListFun();
   if (props.row) {
     Object.assign(formData, {
-      ...props.row,
+      ...props.row
     });
   }
 }
@@ -204,85 +203,169 @@ function handleClosed() {
 </script>
 
 <template>
-  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling :title="type === 'add' ? '新增环境档案' : '编辑环境档案'"
-    v-model="visible" :loading="loading" @confirm="handleConfirm" @cancel="cancelConfirm" @opened="handleOpened"
-    @closed="handleClosed">
+  <v-dialog
+    show-full-screen
+    :fixed-body-height="false"
+    use-body-scrolling
+    :title="type === 'add' ? '新增环境档案' : '编辑环境档案'"
+    v-model="visible"
+    :loading="loading"
+    @confirm="handleConfirm"
+    @cancel="cancelConfirm"
+    @opened="handleOpened"
+    @closed="handleClosed"
+  >
     <el-form :model="formData" label-width="150px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
           <el-form-item label="监测点位：" prop="description">
-            <el-input v-model="formData.description" placeholder="请输入监测点位" autocomplete="off" style="width: 300px" />
+            <el-input
+              v-model="formData.description"
+              placeholder="请输入监测点位"
+              autocomplete="off"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="环境指标：" prop="unitName">
-            <el-select v-model="formData.unitName" filterable placeholder="请选择环境指标" style="width: 300px">
+            <!-- <el-select
+              v-model="formData.unitName"
+              filterable
+              placeholder="请选择环境指标"
+              style="width: 300px"
+            >
               <el-option label="温度" value="温度" />
               <el-option label="湿度" value="湿度" />
               <el-option label="压差" value="压差" />
               <el-option label="水" value="水" />
               <el-option label="电" value="电" />
-            </el-select>
+            </el-select> -->
+            <el-input
+              v-model="formData.unitName"
+              placeholder="请输入环境指标"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="位号：" prop="tag">
-            <el-input v-model="formData.tag" autocomplete="off" placeholder="请输入位号" style="width: 300px" />
+          <el-form-item label="单位：" prop="unit">
+            <el-input
+              v-model="formData.unit"
+              autocomplete="off"
+              placeholder="请输入单位"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="类型：" prop="type">
-            <el-input v-model="formData.type" placeholder="请输入类型" autocomplete="off" style="width: 300px" />
+            <el-input
+              v-model="formData.type"
+              placeholder="请输入类型"
+              autocomplete="off"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item label="范围：" prop="scope">
-            <el-input v-model="formData.scope" placeholder="请输入范围" autocomplete="off" style="width: 300px" />
+            <el-input
+              v-model="formData.scope"
+              placeholder="请输入范围"
+              autocomplete="off"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="信号：" prop="esignal">
-            <el-input v-model="formData.esignal" placeholder="请输入信号" autocomplete="off" style="width: 300px" />
+            <el-input
+              v-model="formData.esignal"
+              placeholder="请输入信号"
+              autocomplete="off"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item label="设备仪表供应商：" prop="supplier">
-            <el-input v-model="formData.supplier" placeholder="请输入设备仪表供应商" autocomplete="off" style="width: 300px" />
+            <el-input
+              v-model="formData.supplier"
+              placeholder="请输入设备仪表供应商"
+              autocomplete="off"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="设备仪表型号：" prop="model">
-            <el-input v-model="formData.model" placeholder="请输入设备仪表型号" autocomplete="off" style="width: 300px" />
+            <el-input
+              v-model="formData.model"
+              placeholder="请输入设备仪表型号"
+              autocomplete="off"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="区域：" prop="earea">
-        <el-select v-model="formData.earea" filterable placeholder="请选择区域" style="width: 300px">
-          <el-option label="控制区" value="控制区" />
-          <el-option label="高风险安全风险车间防护区" value="高风险安全风险车间防护区" />
-          <el-option label="UDAF区" value="UDAF区" />
-          <el-option label="C级区" value="C级区" />
-          <el-option label="D级区" value="D级区" />
-          <el-option label="CNC区" value="CNC区" />
-          <el-option label="NC区" value="NC区" />
-          <el-option label="有毒区" value="有毒区" />
-        </el-select>
-      </el-form-item>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="位号：" prop="tag">
+            <el-input
+              v-model="formData.tag"
+              placeholder="请输入位号"
+              style="width: 300px"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="区域：" prop="earea">
+            <el-input
+              v-model="formData.earea"
+              placeholder="请输入区域"
+              style="width: 300px"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
       <el-form-item label="应急预案：" prop="emergencyIds">
-        <el-select v-model="formData.emergencyIds" filterable multiple placeholder="请选择应急预案" style="width: 300px">
-          <el-option v-for="item in emergencylist" :key="item.emergencyId" :label="item.title"
-            :value="item.emergencyId" />
+        <el-select
+          v-model="formData.emergencyIds"
+          filterable
+          multiple
+          placeholder="请选择应急预案"
+          style="width: 300px"
+        >
+          <el-option
+            v-for="item in emergencylist"
+            :key="item.emergencyId"
+            :label="item.title"
+            :value="item.emergencyId"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="SOP手册：" prop="sopIds">
-        <el-select v-model="formData.sopIds" multiple filterable placeholder="请选择SOP手册" style="width: 300px">
-          <el-option v-for="item in soplist" :key="item.sopId" :label="item.name" :value="item.sopId" />
+        <el-select
+          v-model="formData.sopIds"
+          multiple
+          filterable
+          placeholder="请选择SOP手册"
+          style="width: 300px"
+        >
+          <el-option
+            v-for="item in soplist"
+            :key="item.sopId"
+            :label="item.name"
+            :value="item.sopId"
+          />
         </el-select>
       </el-form-item>
     </el-form>
