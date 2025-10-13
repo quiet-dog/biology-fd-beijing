@@ -4,7 +4,7 @@
     :fixed-body-height="false"
     use-body-scrolling
     :is-show-confirm="false"
-    title="环境数据分析"
+    title="区域环境数据分析"
     v-model="visible"
     :disableFooter="true"
     @cancel="cancelConfirm"
@@ -63,6 +63,13 @@ const formRef = ref<FormInstance>();
 let myChart = null;
 const chartRef = ref();
 const option = {
+  title: {
+    text: "暂无数据",
+    left: "center",
+    top: "top",
+    textStyle: { color: "#999", fontSize: 18 },
+    show: false
+  },
   grid: {
     left: "5%",
     right: "5%",
@@ -159,6 +166,9 @@ const archiveListFun = async () => {
     dataList.value = res.data.unitName.filter(
       item => item !== "电" && item !== "水" && !item.includes("报警")
     );
+    if (Array.isArray(dataList.value) && dataList.value.length > 0) {
+      formData.value.unitName = dataList.value[0];
+    }
     console.log("dataList", dataList.value);
   });
 };
@@ -190,7 +200,7 @@ const powerByAreaTotalStaticFun = async () => {
   option.legend.data = data.series.map(item => item.name);
   option.xAxis.data = data.xdata;
   option.series = data.series;
-  option.yAxis.min = 1;
+  option.yAxis.min = 0;
   if (Array.isArray(data.series) && data?.series.length > 0) {
     const xData = [];
     data?.series.forEach(item => {
@@ -199,7 +209,9 @@ const powerByAreaTotalStaticFun = async () => {
       }
     });
     option.yAxis.max = Math.max(...xData, 6);
+    option.title.show = false;
   } else {
+    option.title.show = true;
     option.yAxis.max = 6;
   }
 
@@ -276,7 +288,7 @@ onUnmounted(() => {
   window.removeEventListener("resize", () => {
     myChart.value?.resize();
   });
-  myChart.value?.dispose();
+  // myChart.value?.dispose();
 });
 
 defineExpose({

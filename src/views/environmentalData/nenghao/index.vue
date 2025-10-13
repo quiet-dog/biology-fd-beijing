@@ -1,19 +1,27 @@
-<script lang='ts' setup>
-import { getNenghaoList } from '@/api/environmentalData/alarmLevelSetting';
-import { environmentalFilesList, environmentalFilesListRes, exportNenghao } from '@/api/environmentalData/environmentalArchives';
-import { CommonUtils } from '@/utils/common';
-import { PaginationProps } from '@pureadmin/table';
-import dayjs from 'dayjs';
-import { Sort } from 'element-plus/es/components';
-import { reactive } from 'vue';
-import { onMounted } from 'vue';
-import { toRaw } from 'vue';
-import { h } from 'vue';
-import { ref } from 'vue';
+<script lang="ts" setup>
+import { getNenghaoList } from "@/api/environmentalData/alarmLevelSetting";
+import {
+  environmentalFilesList,
+  environmentalFilesListRes,
+  exportNenghao
+} from "@/api/environmentalData/environmentalArchives";
+import { CommonUtils } from "@/utils/common";
+import { PaginationProps } from "@pureadmin/table";
+import dayjs from "dayjs";
+import { Sort } from "element-plus/es/components";
+import { reactive } from "vue";
+import { onMounted } from "vue";
+import { toRaw } from "vue";
+import { h } from "vue";
+import { ref } from "vue";
 import { PureTableBar } from "@/components/RePureTableBar";
-import { ExportDownload, ExportPdfDownload, ExportWordDownload } from "@/utils/exportdownload";
+import {
+  ExportDownload,
+  ExportPdfDownload,
+  ExportWordDownload
+} from "@/utils/exportdownload";
 import { Download, Refresh, Search, Upload } from "@element-plus/icons-vue";
-import { computed } from 'vue';
+import { computed } from "vue";
 import analyzeFormModal from "./analyze-from-modal.vue";
 
 const tableRef = ref();
@@ -44,8 +52,8 @@ const columns: TableColumnList = [
       return h(
         "span",
         row.row?.environment?.description +
-        "--" +
-        row.row?.environment?.unitName
+          "--" +
+          row.row?.environment?.unitName
       );
     }
   },
@@ -59,11 +67,11 @@ const columns: TableColumnList = [
   },
   {
     label: "今日能耗量",
-    prop: "value",
+    prop: "value"
   },
   {
     label: "本月能耗量",
-    prop: "totalValue",
+    prop: "totalValue"
   },
   {
     label: "时间",
@@ -102,9 +110,6 @@ const archiveListFun = async () => {
   pagination.total = data.total;
 };
 
-
-
-
 // 修改 getValueColorClass 方法
 const getValueColorClass = row => {
   const value = row.value;
@@ -136,14 +141,13 @@ const getValueColorClass = row => {
   return "text-info"; // 默认颜色
 };
 
-
 const searchEnvFormParams = reactive<environmentalFilesListRes>({
   description: "",
   tag: "",
   environmentIds: [],
   type: ["水", "电"]
 });
-const selectDataListTotal = ref(0)
+const selectDataListTotal = ref(0);
 const envArchiveListFun = async () => {
   // pageLoading.value = true;
 
@@ -160,9 +164,14 @@ const envArchiveListFun = async () => {
   // pagination.total = data.total;
 };
 function loadArchiveListFun() {
-  console.log(Math.ceil(selectDataListTotal.value / searchEnvFormParams.pageSize))
-  if (Math.ceil(selectDataListTotal.value / searchEnvFormParams.pageSize) == searchEnvFormParams.pageNum) {
-    return
+  console.log(
+    Math.ceil(selectDataListTotal.value / searchEnvFormParams.pageSize)
+  );
+  if (
+    Math.ceil(selectDataListTotal.value / searchEnvFormParams.pageSize) ==
+    searchEnvFormParams.pageNum
+  ) {
+    return;
   }
   searchEnvFormParams.pageNum += 1;
 
@@ -186,9 +195,7 @@ const exportClick = (type: string) => {
   //   });
   // }
 
-  exportNenghao(
-    toRaw({ ...searchFormParams, exportType: type })
-  ).then(res => {
+  exportNenghao(toRaw({ ...searchFormParams, exportType: type })).then(res => {
     if (type == "pdf") {
       ExportPdfDownload(res, "能耗列表");
     } else if (type == "word") {
@@ -223,85 +230,131 @@ const analyzeFormModalClick = () => {
   analyzeFormModalRef.value.handleOpened();
 };
 
-
 onMounted(() => {
   archiveListFun();
   envArchiveListFun();
 });
-
 </script>
 
 <template>
   <div>
-
-    <el-form ref="searchFormRef" :inline="true" :model="searchFormParams"
-      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
+    <el-form
+      ref="searchFormRef"
+      :inline="true"
+      :model="searchFormParams"
+      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
+    >
       <el-form-item label="类型" prop="type">
-        <el-select v-model="searchFormParams.type" placeholder="请选择类型" class="w-[200px]">
-          <el-option label="电" value="电"></el-option>
-          <el-option label="水" value="水"></el-option>
+        <el-select
+          v-model="searchFormParams.type"
+          placeholder="请选择类型"
+          class="w-[200px]"
+        >
+          <el-option label="电" value="电" />
+          <el-option label="水" value="水" />
         </el-select>
       </el-form-item>
       <el-form-item label="描述：" class="form-item">
-        <el-select v-model="searchFormParams.environmentId" placeholder="请选择描述" style="width: 240px">
+        <el-select
+          v-model="searchFormParams.environmentId"
+          placeholder="请选择描述"
+          style="width: 240px"
+        >
           <div v-infinite-scroll="loadArchiveListFun">
             <!-- {{ row.description }}{{ "--" }}{{ row.unitName }} -->
-            <el-option v-for="item in selectDataList" :key="item.environmentId"
-              :label="`${item.description}--${item.unitName}`" :value="item.environmentId" />
+            <el-option
+              v-for="item in selectDataList"
+              :key="item.environmentId"
+              :label="`${item.description}--${item.unitName}`"
+              :value="item.environmentId"
+            />
           </div>
         </el-select>
       </el-form-item>
       <el-form-item label="时间：">
-        <el-date-picker class="!w-[240px]" v-model="timeRange" value-format="YYYY-MM-DD" type="daterange"
-          range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
+        <el-date-picker
+          class="!w-[240px]"
+          v-model="timeRange"
+          value-format="YYYY-MM-DD"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        />
       </el-form-item>
 
       <el-form-item>
         <el-button type="primary" @click="archiveListFun">查询</el-button>
         <el-button @click="resetForm">重置</el-button>
       </el-form-item>
-
-
-
     </el-form>
 
-    <PureTableBar title="能耗监测列表" :columns="columns" :tableRef="tableRef?.getTableRef()">
+    <PureTableBar
+      title="能耗监测列表"
+      :columns="columns"
+      :tableRef="tableRef?.getTableRef()"
+    >
       <template #buttons>
-
-        <el-button type="primary" @click="analyzeFormModalClick">能耗数据分析</el-button>
-
+        <el-button type="primary" @click="analyzeFormModalClick"
+          >能耗数据分析</el-button
+        >
+        &nbsp;&nbsp;
         <el-dropdown>
           <el-button type="warning" :icon="Download">导出</el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="exportClick('excel')">excel</el-dropdown-item>
-              <el-dropdown-item @click="exportClick('word')">word</el-dropdown-item>
-              <el-dropdown-item @click="exportClick('pdf')">pdf</el-dropdown-item>
+              <el-dropdown-item @click="exportClick('excel')"
+                >excel</el-dropdown-item
+              >
+              <el-dropdown-item @click="exportClick('word')"
+                >word</el-dropdown-item
+              >
+              <el-dropdown-item @click="exportClick('pdf')"
+                >pdf</el-dropdown-item
+              >
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
-          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
-          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
+        <pure-table
+          ref="tableRef"
+          adaptive
+          :adaptiveConfig="{ offsetBottom: 32 }"
+          align-whole="center"
+          row-key="policiesId"
+          showOverflowTooltip
+          table-layout="auto"
+          :size="size"
+          :columns="dynamicColumns"
+          :data="dataList"
+          :pagination="pagination"
+          :paginationSmall="size === 'small' ? true : false"
+          @page-size-change="archiveListFun"
+          @page-current-change="archiveListFun"
+          :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
-          }" style="height: auto">
+          }"
+          style="height: auto"
+        >
           <template #value="{ row }">
-            <span :class="getValueColorClass(row)">{{ row.vaule == null || row.vaule == undefined ? "-" :
-              Math.round(row.vaule * 100) / 100 }}</span>
+            <span :class="getValueColorClass(row)">{{
+              row.vaule == null || row.vaule == undefined
+                ? "-"
+                : Math.round(row.vaule * 100) / 100
+            }}</span>
           </template>
           <template #totalValue="{ row }">
-            <span>{{ (row.totalValue == null || row.totalValue == undefined) ? "-" : Math.round(row.totalValue * 100) /
-              100 }}</span>
+            <span>{{
+              row.totalValue == null || row.totalValue == undefined
+                ? "-"
+                : Math.round(row.totalValue * 100) / 100
+            }}</span>
           </template>
           <template #createTime="{ row }">
-            <span>{{
-              dayjs(row.createTime).format("YYYY-MM-DD")
-              }}</span>
+            <span>{{ dayjs(row.createTime).format("YYYY-MM-DD") }}</span>
           </template>
         </pure-table>
       </template>

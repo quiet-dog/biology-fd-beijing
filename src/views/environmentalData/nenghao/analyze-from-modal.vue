@@ -63,6 +63,13 @@ const formRef = ref<FormInstance>();
 const myChart = ref(null);
 const chartRef = ref();
 const option = {
+  title: {
+    text: "暂无数据",
+    left: "center",
+    top: "top",
+    textStyle: { color: "#999", fontSize: 18 },
+    show: false
+  },
   grid: {
     left: "5%",
     right: "5%",
@@ -176,12 +183,17 @@ const detectionDataFun = async () => {
   option.series[0].data = data.data.data;
   // 设置x轴
   option.xAxis.data = data.data.time;
+  if (option.series[0].data.every(item => item === null)) {
+    option.title.show = true;
+  } else {
+    option.title.show = false;
+  }
 
   // 初始化或更新图表
   if (!myChart.value) {
     myChart.value = echarts.init(chartRef.value);
   }
-  myChart.value.setOption(option);
+  myChart.value.setOption(option, true);
 };
 
 const handleOpened = async () => {
@@ -225,7 +237,7 @@ onUnmounted(() => {
   window.removeEventListener("resize", () => {
     myChart.value?.resize();
   });
-  myChart.value?.dispose();
+  // myChart.value?.dispose();
 });
 
 defineExpose({

@@ -10,7 +10,7 @@
         </el-select>
       </el-form-item>
       <el-radio-group @change="changeRadio" v-model="radio">
-        <el-radio-button label="周" value="周"  />
+        <el-radio-button label="周" value="周" />
         <el-radio-button label="月" value="月" />
         <el-radio-button label="年" value="年" />
       </el-radio-group>
@@ -107,9 +107,8 @@ const archiveListFun = async () => {
 };
 
 const materialsCodeChange = async val => {
-  const { data } = await getstatistics(val);
+  const { data } = await getstatistics(formData.materialsId, radio.value);
 
-  console.log(data);
 
   option.series.forEach(item => {
     item.data = data.seriesData;
@@ -119,8 +118,15 @@ const materialsCodeChange = async val => {
     unit.value = res.data.unit;
   });
 
+  option.yAxis.min = 0
+  if (Array.isArray(option.series[0].data) && option.series[0].data.length == 0) {
+    option.yAxis.max = 6
+  } else {
+    option.yAxis.max = Math.max(...option.series[0].data, 6)
+  }
+
   if (myChart) {
-    myChart.setOption(option); // 确保更新图表
+    myChart.setOption(option, true); // 确保更新图表
   }
 };
 
@@ -135,19 +141,26 @@ const handleOpened = async () => {
   } else {
     val = "week";
   }
-  const { data } = await getstatistics(formData.materialsId,val);
+  const { data } = await getstatistics(formData.materialsId, val);
 
   option.series.forEach(item => {
     item.data = data.seriesData;
   });
   option.xAxis.data = data.xaxisData;
+  option.yAxis.min = 1;
+    option.yAxis.min = 0
+  if (Array.isArray(option.series[0].data) && option.series[0].data.length == 0) {
+    option.yAxis.max = 6
+  } else {
+    option.yAxis.max = Math.max(...option.series[0].data, 6)
+  }
   if (!myChart && chartRef.value) {
     myChart = echarts.init(chartRef.value);
   }
   myChart?.setOption(option);
 };
 
-async function changeRadio(val) { 
+async function changeRadio(val) {
   if (formData.materialsId == null || formData.materialsId == undefined || formData.materialsId == 0) {
     return;
   }
@@ -159,7 +172,7 @@ async function changeRadio(val) {
     val = "week";
   }
 
-  const { data } = await getstatistics(formData.materialsId,val);
+  const { data } = await getstatistics(formData.materialsId, val);
 
   option.series.forEach(item => {
     item.data = data.seriesData;

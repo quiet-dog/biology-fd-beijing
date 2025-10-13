@@ -208,6 +208,13 @@ function handleClosed() {
   selectPinValue.value = "3";
   pinInput.value = 0;
   selectValue.value = [];
+  formData.description = ""
+  formData.environmentIds = []
+  formData.max = 0
+  formData.min = 0
+  formData.pushFrequency = 0
+  formData.pushType = ""
+  formData.thresholdIds=[]
   // Paths.value = [];
 }
 
@@ -253,8 +260,8 @@ onMounted(() => {
     // orderDirection: "descending",
   }).then(res => {
     selectOption.value = res.data.rows.map(item => ({
-      value: item.environmentId,
-      label: item.description,
+      value: item?.environmentId,
+      label: `${item?.description}-${item?.earea}-${item?.unitName}`,
       leaf: true
     }));
   });

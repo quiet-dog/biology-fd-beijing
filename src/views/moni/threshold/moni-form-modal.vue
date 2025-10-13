@@ -53,7 +53,7 @@ const selcteProps: CascaderProps = {
         resolve(
           res.data.rows.map(item => ({
             value: item.equipmentId,
-            label: item.equipmentName,
+            label: `${item?.equipmentName} (${item?.equipmentCode} - ${item?.installationLocation})`,
             leaf: false
           }))
         );
@@ -193,6 +193,13 @@ function handleClosed() {
   selectPinValue.value = "3";
   pinInput.value = 0;
   selectValue.value = [];
+  // formData.description =""
+  formData.description = ""
+  formData.thresholdIds = []
+  formData.min = 0
+  formData.max = 0
+  formData.pushType = ""
+  formData.pushFrequency = 0
   // Paths.value = [];
 }
 
@@ -232,37 +239,17 @@ function changePinValue(val) {
 </script>
 
 <template>
-  <v-dialog
-    show-full-screen
-    :fixed-body-height="false"
-    use-body-scrolling
-    :title="type === 'add' ? '新增设备数据填报规则' : '更新设备数据填报规则'"
-    v-model="visible"
-    :loading="loading"
-    @confirm="handleConfirm"
-    @cancel="cancelConfirm"
-    @opened="handleOpened"
-    @closed="handleClosed"
-  >
+  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling
+    :title="type === 'add' ? '新增设备数据填报规则' : '更新设备数据填报规则'" v-model="visible" :loading="loading" @confirm="handleConfirm"
+    @cancel="cancelConfirm" @opened="handleOpened" @closed="handleClosed">
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-form-item label="填报描述">
-        <el-input
-          v-model="formData.description"
-          autocomplete="off"
-          placeholder="请输入填报描述"
-        />
+        <el-input v-model="formData.description" autocomplete="off" placeholder="请输入填报描述" />
       </el-form-item>
       <el-form-item label="传感器">
         <!-- :options="selectOption"  -->
-        <el-cascader
-          :multiple="true"
-          v-model="selectValue"
-          @change="handleSelectChange"
-          :props="selcteProps"
-          collapse-tags
-          collapse-tags-tooltip
-          clearable
-        />
+        <el-cascader :multiple="true" v-model="selectValue" @change="handleSelectChange" :props="selcteProps"
+          collapse-tags collapse-tags-tooltip clearable />
       </el-form-item>
 
       <el-form-item label="最小">
@@ -280,11 +267,7 @@ function changePinValue(val) {
       <el-form-item label="填报频率">
         <el-input v-model="pinInput" type="number" @input="handleInputPin">
           <template #append>
-            <el-select
-              v-model="selectPinValue"
-              @change="changePinValue"
-              style="width: 115px"
-            >
+            <el-select v-model="selectPinValue" @change="changePinValue" style="width: 115px">
               <el-option label="时" value="1" />
               <el-option label="分" value="2" />
               <el-option label="秒" value="3" />

@@ -63,6 +63,13 @@ const formRef = ref<FormInstance>();
 let myChart = null;
 const chartRef = ref();
 const option = {
+  title: {
+    text: "暂无数据",
+    left: "center",
+    top: "top",
+    textStyle: { color: "#999", fontSize: 18 },
+    show: false
+  },
   grid: {
     left: "5%",
     right: "5%",
@@ -180,12 +187,21 @@ const detectionDataFun = async () => {
   }).then(res => {
     option.series[0].data = res.data.yData;
     option.xAxis.data = res.data.xData;
-    // option.yAxis.min = 1;
-    // if (res.data.xData.every(item => item === null)) {
-    //   option.yAxis.max = 6;
-    // } else {
-    //   option.yAxis.max = Math.max(...res.data.xData, 6);
-    // }
+    if (Array.isArray(res.data.yData)) {
+      if (res.data.yData.every(item => item === null)) {
+        option.title.show = true;
+      } else {
+        option.title.show = false;
+      }
+    } else {
+      option.title.show = true;
+    }
+    option.yAxis.min = 1;
+    if (res.data.yData.every(item => item === null)) {
+      option.yAxis.max = 6;
+    } else {
+      option.yAxis.max = Math.max(...res.data.yData, 6);
+    }
     // 初始化或更新图表
     if (myChart == null) {
       myChart = echarts.init(chartRef.value);
@@ -216,7 +232,8 @@ const handleOpened = async () => {
 
   // 默认选中第一个
   if (dataList.value.length > 0) {
-    formData.value.detectionId = dataList.value[0].detectionId;
+    console.log("formData.value.detectionId", dataList.value[0]);
+    formData.value.detectionId = dataList.value[0].environmentId;
   }
 
   // 设置默认时间为今天，使用 ISO 格式
@@ -224,7 +241,6 @@ const handleOpened = async () => {
   formData.value.timeRange = today;
   formData.value.beginTime = `${today}T00:00:00.000Z`;
   formData.value.endTime = `${today}T23:59:59.999Z`;
-
   await detectionDataFun();
 };
 
@@ -267,7 +283,7 @@ onUnmounted(() => {
   window.removeEventListener("resize", () => {
     myChart.value?.resize();
   });
-  myChart.value?.dispose();
+  // myChart.value?.dispose();
 });
 
 defineExpose({
