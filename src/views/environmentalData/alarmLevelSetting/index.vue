@@ -1,78 +1,49 @@
 <template>
   <div class="main">
-    <el-form
-      ref="searchFormRef"
-      :inline="true"
-      :model="searchFormParams"
-      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
-    >
+    <el-form ref="searchFormRef" :inline="true" :model="searchFormParams"
+      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
       <el-form-item label="描述：">
-        <el-input
-          class="!w-[200px]"
-          v-model="searchFormParams.description"
-          placeholder="请输入描述"
-          clearable
-        />
+        <el-input class="!w-[200px]" v-model="searchFormParams.description" placeholder="请输入描述" clearable />
       </el-form-item>
       <el-form-item label="位号：">
-        <el-input
-          class="!w-[200px]"
-          v-model="searchFormParams.tag"
-          placeholder="请输入位号"
-          clearable
+        <el-input class="!w-[200px]" v-model="searchFormParams.tag" placeholder="请输入位号" clearable />
+      </el-form-item>
+      <el-form-item label="时间：">
+        <el-date-picker
+          class="!w-[240px]"
+          type="date"
+          value-format="YYYY-MM-DD"
+          v-model="searchFormParams.beginTime"
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" :icon="Search" @click="archiveListFun"
-          >搜索</el-button
-        >
+        <el-button type="primary" :icon="Search" @click="archiveListFun">搜索</el-button>
         <el-button :icon="Refresh" @click="resetForm">重置</el-button>
       </el-form-item>
     </el-form>
-    <PureTableBar
-      title="环境监测列表"
-      :columns="columns"
-      :tableRef="tableRef?.getTableRef()"
-      @refresh="onSearch"
-    >
+    <PureTableBar title="环境监测列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
       <template #buttons>
-        <el-button type="primary" @click="toAnalyzeFormModalClick"
+        <!-- <el-button type="primary" @click="toAnalyzeFormModalClick"
           >区域环境数据分析</el-button
-        >
-        <el-button type="primary" @click="analyzeFormModalClick"
-          >环境数据分析</el-button
-        >
+        > -->
+        <el-button type="primary" @click="analyzeFormModalClick">环境数据分析</el-button>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table
-          ref="tableRef"
-          adaptive
-          :adaptiveConfig="{ offsetBottom: 32 }"
-          align-whole="center"
-          row-key="policiesId"
-          showOverflowTooltip
-          table-layout="auto"
-          :size="size"
-          :columns="dynamicColumns"
-          :data="dataList"
-          :pagination="pagination"
-          :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun"
-          @page-current-change="archiveListFun"
-          :header-cell-style="{
+        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
+          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
+          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
+          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
-          }"
-          style="height: auto"
-        >
+          }" style="height: auto">
           <template #value="{ row }">
             <span :class="getValueColorClass(row)">{{ row.value }}</span>
           </template>
           <template #createTime="{ row }">
             <span>{{
               dayjs(row.createTime).format("YYYY-MM-DD HH:mm:ss")
-            }}</span>
+              }}</span>
           </template>
         </pure-table>
       </template>
@@ -110,8 +81,8 @@ const columns: TableColumnList = [
       return h(
         "span",
         row.row?.environment?.description +
-          "--" +
-          row.row?.environment?.unitName
+        "--" +
+        row.row?.environment?.unitName
       );
     }
   },
@@ -168,6 +139,7 @@ const archiveListFun = async () => {
 function resetForm() {
   searchFormParams.description = "";
   searchFormParams.tag = "";
+  searchFormParams.beginTime = dayjs().format("YYYY-MM-DD")
 
   // 重置 pagination 中的属性
   pagination.total = 0;
@@ -195,6 +167,7 @@ const onSearch = tableRef => {
 };
 
 onMounted(() => {
+  searchFormParams.beginTime = dayjs().format("YYYY-MM-DD")
   archiveListFun();
 });
 defineOptions({
@@ -237,15 +210,19 @@ const getValueColorClass = row => {
 .text-urgent {
   color: #f53f3f;
 }
+
 .text-important {
   color: #ff7d00;
 }
+
 .text-warning {
   color: #fadc19;
 }
+
 .text-info {
   color: #168cff;
 }
+
 .text-success {
   color: #00b42a;
 }

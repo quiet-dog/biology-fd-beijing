@@ -1,44 +1,19 @@
 <template>
   <div class="main">
-    <el-form
-      ref="searchFormRef"
-      :inline="true"
-      :model="searchFormParams"
-      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
-    >
+    <el-form ref="searchFormRef" :inline="true" :model="searchFormParams"
+      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
       <el-form-item label="设备名称：">
-        <el-input
-          class="!w-[200px]"
-          placeholder="请输入设备名称"
-          clearable
-          v-model="searchFormParams.equipmentName"
-        />
+        <el-input class="!w-[200px]" placeholder="请输入设备名称" clearable v-model="searchFormParams.equipmentName" />
       </el-form-item>
       <el-form-item label="设备型号：">
-        <el-input
-          class="!w-[200px]"
-          placeholder="请输入设备型号"
-          clearable
-          v-model="searchFormParams.equipmentType"
-        />
+        <el-input class="!w-[200px]" placeholder="请输入设备型号" clearable v-model="searchFormParams.equipmentType" />
       </el-form-item>
       <el-form-item label="生产厂家：">
-        <el-input
-          class="!w-[200px]"
-          placeholder="请输入生产厂家"
-          clearable
-          v-model="searchFormParams.manufacturer"
-        />
+        <el-input class="!w-[200px]" placeholder="请输入生产厂家" clearable v-model="searchFormParams.manufacturer" />
       </el-form-item>
       <el-form-item label="购置日期：">
-        <el-date-picker
-          class="!w-[240px]"
-          v-model="timeRange"
-          type="daterange"
-          range-separator="~"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        />
+        <el-date-picker class="!w-[240px]" v-model="timeRange" type="daterange" range-separator="~"
+          start-placeholder="开始日期" end-placeholder="结束日期" />
       </el-form-item>
       <!-- <el-form-item label="使用状态：">
         <el-select
@@ -53,19 +28,12 @@
         </el-select>
       </el-form-item> -->
       <el-form-item>
-        <el-button type="primary" :icon="Search" @click="archiveListFun"
-          >搜索</el-button
-        >
+        <el-button type="primary" :icon="Search" @click="archiveListFun">搜索</el-button>
         <el-button :icon="Refresh" @click="resetForm">重置</el-button>
       </el-form-item>
     </el-form>
 
-    <PureTableBar
-      title="设备档案列表"
-      :columns="columns"
-      :tableRef="tableRef?.getTableRef()"
-      @refresh="onSearch"
-    >
+    <PureTableBar title="设备档案列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
       <template #buttons>
         <el-button type="success" :icon="Upload" @click="openImportDialog">
           导入
@@ -76,35 +44,21 @@
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table
-          ref="tableRef"
-          adaptive
-          :adaptiveConfig="{ offsetBottom: 32 }"
-          align-whole="center"
-          row-key="policiesId"
-          showOverflowTooltip
-          table-layout="auto"
-          :size="size"
-          :columns="dynamicColumns"
-          :data="dataList"
-          :pagination="pagination"
-          :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun"
-          @page-current-change="archiveListFun"
-          :header-cell-style="{
+        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
+          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
+          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
+          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
-          }"
-          @selection-change="
+          }" @selection-change="
             rows => (multipleSelection = rows.map(item => item.equipmentId))
-          "
-          style="height: auto"
-        >
+          " style="height: auto">
           <template #isHighRisk="{ row }">
             <span>{{ row.isHighRisk ? "是" : "否" }}</span>
           </template>
           <template #purchaseDate="{ row }">
-            <span>{{ dayjs(row.purchaseDate).format("YYYY-MM-DD") }}</span>
+            <span>{{ row.purchaseDate ? dayjs(row.purchaseDate).format("YYYY-MM-DD") : "--" }}</span>
+
           </template>
           <template #isOnline="{ row }">
             <el-tag :type="row.isOnline ? 'success' : 'danger'">
@@ -112,13 +66,7 @@
             </el-tag>
           </template>
           <template #operation="{ row }">
-            <el-button
-              class="reset-margin"
-              link
-              type="primary"
-              :size="size"
-              @click="openDetailDialog(row)"
-            >
+            <el-button class="reset-margin" link type="primary" :size="size" @click="openDetailDialog(row)">
               查看
             </el-button>
           </template>
@@ -142,7 +90,7 @@ import {
 import detailFromModal from "./detail-from-modal.vue";
 import { CommonUtils } from "@/utils/common";
 import { Sort } from "element-plus";
-import { Plus, Upload, Refresh, Search,Download } from "@element-plus/icons-vue";
+import { Plus, Upload, Refresh, Search, Download } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import importFormModal from "./import-form-modal.vue";
 import { exportAlarmEvents, exportEquipment } from "@/api/alarmPlatform/alarmEvents";

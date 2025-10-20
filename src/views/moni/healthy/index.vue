@@ -29,23 +29,6 @@
       </el-form-item>
     </el-form>
     <PureTableBar title="人员档案列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
-      <template #buttons>
-        <el-button type="success" :icon="Upload" @click="openImportDialog">
-          导入
-        </el-button>
-        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-        <el-dropdown>
-          <el-button type="warning" :icon="Download" >导出</el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="exportClick('excel')">excel</el-dropdown-item>
-              <el-dropdown-item @click="exportClick('word')">word</el-dropdown-item>
-              <el-dropdown-item @click="exportClick('pdf')">pdf</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-
-      </template>
 
       <template v-slot="{ size, dynamicColumns }">
         <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
@@ -58,7 +41,7 @@
             rows => (multipleSelection = rows.map(item => item.personnelId))
           " style="height: auto">
           <template #entryTime="{ row }">
-            <span>{{ row.entryTime ?  dayjs(row.entryTime).format("YYYY-MM-DD"):"--" }}</span>
+            <span>{{ row.entryTime ? dayjs(row.entryTime).format("YYYY-MM-DD") : "--" }}</span>
           </template>
           <template #leaveTime="{ row }">
             <span>{{
@@ -66,18 +49,14 @@
               }}</span>
           </template>
           <template #operation="{ row }">
-            <el-button class="reset-margin" link type="primary" :size="size" @click="openDetailDialog(row, false)">
-              查看
-            </el-button>
-            <el-button class="reset-margin" link type="primary" :size="size" @click="openDetailDialog(row, true)">
-              修改
+            <el-button @click="openMoniDialog(row.personnelId)" class="reset-margin" link type="primary" :size="size">
+              填报设置
             </el-button>
           </template>
         </pure-table>
       </template>
     </PureTableBar>
-    <detailFromModal @refresh="archiveListFun" ref="detailFromModalRef"></detailFromModal>
-    <importFormModal ref="importRef" @refresh="archiveListFun" />
+    <MoniDialog ref="moniDialogRef" />
   </div>
 </template>
 
@@ -90,13 +69,14 @@ import {
   personnelList,
   exportPersonnel
 } from "@/api/personnelData/personnelProfile";
-import detailFromModal from "./detail-from-modal.vue";
-import importFormModal from "./import-form-modal.vue";
 import { Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
 import { ExportDownload, ExportPdfDownload, ExportWordDownload } from "@/utils/exportdownload";
 import { Download, Refresh, Search, Upload } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
+import MoniDialog from "./moniDialog.vue";
+
+const moniDialogRef = ref<InstanceType<typeof MoniDialog>>()
 const tableRef = ref();
 const columns: TableColumnList = [
   {
@@ -206,7 +186,7 @@ const exportClick = (type: string) => {
   }
 
   exportPersonnel(
-    toRaw({ ...searchFormParams, personnelIds: multipleSelection.value,exportType: type })
+    toRaw({ ...searchFormParams, personnelIds: multipleSelection.value, exportType: type })
   ).then(res => {
     if (type == "pdf") {
       ExportPdfDownload(res, "人员档案");
@@ -247,6 +227,10 @@ function resetForm() {
 const importRef = ref();
 function openImportDialog() {
   importRef.value.handleOpened();
+}
+
+function openMoniDialog(personnelId: number) {
+  moniDialogRef.value.handleOpen(personnelId)
 }
 
 onMounted(() => {

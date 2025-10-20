@@ -95,6 +95,7 @@ function handleOpened() {
 
     // @ts-ignore
     props.row.paths.forEach((item, index) => {
+      console.log("item",item)
       // 判断类型
       if (typeof item === "string") {
         const fileName = item.split("/").pop();
@@ -114,7 +115,7 @@ function handleOpened() {
           if (fileName.includes("_")) {
             // @ts-ignore
             // props.row.paths[index] = fileName;
-            formData.paths.push(fileName);
+            formData.paths.push(item["path"]);
             Paths.value.push({
               name: fileName,
               url: "",

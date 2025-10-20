@@ -121,7 +121,6 @@ const stompClient = new Client({
 const audu = ref();
 stompClient.onConnect = frame => {
   stompClient.subscribe("/topic/info", greeting => {
-    console.log("greeting", JSON.parse(greeting.body));
     const data = JSON.parse(greeting.body);
 
     // 根据消息类型设置通知类型和颜色
@@ -164,6 +163,7 @@ stompClient.onConnect = frame => {
     });
     navbarRef.value.getNotice();
   });
+
 };
 
 stompClient.onWebSocketError = error => {
