@@ -582,7 +582,7 @@ const toPath = item => {
                     <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
                       人员出勤率
                     </div>
-                    <ElPopover @before-enter="getEventDataList" width="300">
+                    <ElPopover @before-enter="getEventDataList" width="400">
                       <template #reference>
                         <div>
                           {{
@@ -595,6 +595,7 @@ const toPath = item => {
                       <ElTable height="500" :data="eventData">
                         <ElTableColumn prop="personnel.code" label="员工编号" />
                         <ElTableColumn prop="personnel.name" label="员工姓名" />
+                        <ElTableColumn prop="doorPlace" label="出勤地点" />
                         <ElTableColumn prop="doorDate" label="出勤时间">
                           <template #default="{ row }">
                             {{ row.doorDate ? dayjs(row.doorDate).format("HH:mm:ss"):"--" }}
