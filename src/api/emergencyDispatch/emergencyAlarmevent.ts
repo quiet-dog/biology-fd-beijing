@@ -34,7 +34,13 @@ export interface addemergencyEventRes {
   handleIds: number[];
   emergencyAlarmIds: number[];
   type: string;
+  status?: boolean;
+  handlerNames?: string
 }
 export function addemergencyEvent(data: addemergencyEventRes) {
   return http.request("post", "/manage/emergencyEvent", { data });
+}
+
+export function updateEmergencyEvent(data) {
+  return http.request("put", "/manage/emergencyEvent/" + data.emergencyEventId, { data });
 }

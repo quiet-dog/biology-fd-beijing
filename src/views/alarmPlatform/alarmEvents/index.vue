@@ -43,7 +43,7 @@
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
+        <pure-table  ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
           row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
           :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
           @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{

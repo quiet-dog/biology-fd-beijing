@@ -146,14 +146,15 @@ function handleOpened() {
       alarmLevels:
         alarmlevels.length == 0
           ? [
-              {
-                level: "",
-                min: null,
-                max: null
-              }
-            ]
+            {
+              level: "",
+              min: null,
+              max: null
+            }
+          ]
           : alarmlevels
     });
+    num.value = Array.isArray(alarmlevels) ? alarmlevels.length : 1
     console.log(formData);
   }
 }
@@ -178,67 +179,32 @@ const alarmLevelOptions = [
 </script>
 
 <template>
-  <v-dialog
-    show-full-screen
-    :fixed-body-height="false"
-    use-body-scrolling
-    title="阈值设置"
-    v-model="visible"
-    :loading="loading"
-    style="width: 900px"
-    @confirm="handleConfirm"
-    @cancel="cancelConfirm"
-    @opened="handleOpened"
-  >
+  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling title="阈值设置" v-model="visible"
+    :loading="loading" style="width: 900px" @confirm="handleConfirm" @cancel="cancelConfirm" @opened="handleOpened">
     <el-form :model="formData" label-width="120px" :rules="rules" ref="formRef">
       <el-form-item label="级别层级：">
-        <el-input-number
-          v-model="num"
-          :min="1"
-          :max="5"
-          @change="handleChange"
-        />
+        <el-input-number v-model="num" :min="1" :max="5" @change="handleChange" />
       </el-form-item>
       <el-row v-for="(item, index) in formData.alarmLevels" :key="index">
         <el-col :span="12">
           <el-form-item label="报警级别：">
-            <el-select
-              v-model="item.level"
-              placeholder="请选择报警级别"
-              style="width: 300px"
-            >
-              <el-option
-                v-for="option in alarmLevelOptions"
-                :key="option.value"
-                :label="option.label"
-                :value="option.value"
-              />
+            <el-select v-model="item.level" placeholder="请选择报警级别" style="width: 300px">
+              <el-option v-for="option in alarmLevelOptions" :key="option.value" :label="option.label"
+                :value="option.value" />
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="指标区间：">
-            <div
-              style="
+            <div style="
                 width: 300px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-              "
-            >
-              <el-input
-                v-model="item.min"
-                placeholder="开始区间"
-                autocomplete="off"
-                style="width: 130px"
-              />
+              ">
+              <el-input v-model="item.min" placeholder="开始区间" autocomplete="off" style="width: 130px" />
               <span>至</span>
-              <el-input
-                v-model="item.max"
-                placeholder="结束区间"
-                autocomplete="off"
-                style="width: 130px"
-              />
+              <el-input v-model="item.max" placeholder="结束区间" autocomplete="off" style="width: 130px" />
             </div>
           </el-form-item>
         </el-col>

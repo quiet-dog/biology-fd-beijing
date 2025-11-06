@@ -66,8 +66,11 @@
           }"
           style="height: auto"
         >
-          <template #handlers="{ row }">
+          <!-- <template #handlers="{ row }">
             <span v-for="item in row.handlers">{{ item.name }}</span>
+          </template> -->
+          <template #status="{row}">
+            <span>{{ row.status ? "已处置":"未处置" }}</span>
           </template>
           <template #type="{ row }">
             {{ row.type ?? "--" }}
@@ -82,12 +85,23 @@
             >
               查看
             </el-button>
+
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="openDialog('update', row)"
+            >
+              修改
+            </el-button>
           </template>
         </pure-table>
       </template>
     </PureTableBar>
     <addEditFormModal
       v-model="modalVisible"
+      :row="opRow"
       :type="opType"
       @success="onSearch(tableRef)"
     />
@@ -132,12 +146,17 @@ const columns: TableColumnList = [
   },
   {
     label: "处理人员",
-    prop: "handlers",
-    slot: "handlers"
+    prop: "handlerNames",
+    // slot: "handlers"
   },
   {
     label: "事件内容",
     prop: "content"
+  },
+  {
+    label: "是否处置",
+    prop: "status",
+    slot:"status"
   },
   {
     label: "操作",
@@ -187,8 +206,10 @@ const archiveListFun = async () => {
 
 const opType = ref<"add" | "update">("add");
 const modalVisible = ref(false);
-function openDialog(type: "add" | "update") {
+const opRow = ref()
+function openDialog(type: "add" | "update",row) {
   opType.value = type;
+  opRow.value = row;
   modalVisible.value = true;
 }
 

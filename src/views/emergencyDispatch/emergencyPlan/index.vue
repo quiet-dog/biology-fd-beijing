@@ -62,6 +62,9 @@
             color: 'var(--el-text-color-primary)'
           }"
           style="height: auto"
+          @selection-change="
+            rows => (multipleSelection = rows.map(item => item.emergencyId))
+          "
         >
           <template #updateTime="{ row }">
             <span>{{
@@ -122,8 +125,13 @@ import { CommonUtils } from "@/utils/common";
 import { Plus, Refresh, Search } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 
+const multipleSelection = ref([]);
 const tableRef = ref();
 const columns: TableColumnList = [
+  // {
+  //   type: "selection",
+  //   align: "left"
+  // },
   {
     label: "预案编号",
     prop: "emergencyId"

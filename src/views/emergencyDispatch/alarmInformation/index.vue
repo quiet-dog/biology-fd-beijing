@@ -1,18 +1,9 @@
 <template>
   <div>
-    <el-form
-      :inline="true"
-      ref="searchFormRef"
-      :model="searchFormParams"
-      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
-    >
+    <el-form :inline="true" ref="searchFormRef" :model="searchFormParams"
+      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
       <el-form-item label="报警类型：">
-        <el-select
-          class="!w-[200px]"
-          placeholder="请选择报警类型"
-          clearable
-          v-model="searchFormParams.type"
-        >
+        <el-select class="!w-[200px]" placeholder="请选择报警类型" clearable v-model="searchFormParams.type">
           <el-option label="设备报警" value="设备报警" />
           <el-option label="环境报警" value="环境报警" />
           <!-- <el-option label="工艺报警" value="工艺报警" />
@@ -20,41 +11,22 @@
         </el-select>
       </el-form-item>
       <el-form-item label="报警级别：">
-        <el-select
-          class="!w-[200px]"
-          placeholder="请选择报警级别"
-          clearable
-          v-model="searchFormParams.level"
-        >
+        <el-select class="!w-[200px]" placeholder="请选择报警级别" clearable v-model="searchFormParams.level">
           <el-option v-for="item in typeOptions" :label="item" :value="item" />
         </el-select>
       </el-form-item>
       <el-form-item label="报警时间：">
-        <el-date-picker
-          class="!w-[240px]"
-          type="daterange"
-          v-model="timeRange"
-          value-format="YYYY-MM-DD"
-          range-separator="~"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        />
+        <el-date-picker class="!w-[240px]" type="daterange" v-model="timeRange" value-format="YYYY-MM-DD"
+          range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" :icon="Search" @click="archiveListFun"
-          >搜索</el-button
-        >
+        <el-button type="primary" :icon="Search" @click="archiveListFun">搜索</el-button>
         <el-button :icon="Refresh" @click="resetForm">重置</el-button>
       </el-form-item>
     </el-form>
-    <PureTableBar
-      title="报警信息列表"
-      :columns="columns"
-      :tableRef="tableRef?.getTableRef()"
-      @refresh="onSearch"
-    >
-    <template #buttons>
-      <el-dropdown>
+    <PureTableBar title="报警信息列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
+      <template #buttons>
+        <el-dropdown>
           <el-button type="warning" :icon="Download">报告导出</el-button>
           <template #dropdown>
             <el-dropdown-menu>
@@ -64,47 +36,25 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-    </template>
+      </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table
-          ref="tableRef"
-          adaptive
-          :adaptiveConfig="{ offsetBottom: 32 }"
-          align-whole="center"
-          row-key="policiesId"
-          showOverflowTooltip
-          table-layout="auto"
-          :size="size"
-          :columns="dynamicColumns"
-          :data="dataList"
-          :pagination="pagination"
-          :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun"
-          @page-current-change="archiveListFun"
-          :header-cell-style="{
+        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
+          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
+          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
+          @page-size-change="archiveListFun" @page-current-change="archiveListFun" @selection-change="
+            rows => (multipleSelection = rows.map(item => item.emergencyAlarmId))
+          " :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
-          }"
-          style="height: auto"
-        >
+          }" style="height: auto">
           <template #level="{ row }">
-            <el-tag
-              :style="getLevelStyle(row.level)"
-              effect="plain"
-              size="small"
-            >
+            <el-tag :style="getLevelStyle(row.level)" effect="plain" size="small">
               {{ row.level ? row.level : "-" }}
             </el-tag>
           </template>
           <template #operation="{ row }">
-            <el-button
-              class="reset-margin"
-              link
-              type="primary"
-              :size="size"
-              @click.stop="detailsClcik(row)"
-            >
+            <el-button class="reset-margin" link type="primary" :size="size" @click.stop="detailsClcik(row)">
               查看
             </el-button>
           </template>
@@ -156,7 +106,7 @@ const exportClick = (type: string) => {
   // }
 
   exportEmergencyAlarm(
-    toRaw({ ...searchFormParams,exportType:type  })
+    toRaw({ ...searchFormParams, exportType: type, ids: multipleSelection.value })
   ).then(res => {
     console.log(res);
     if (type == "pdf") {
@@ -232,7 +182,12 @@ const getLevelStyle = (level: string) => {
 };
 
 const tableRef = ref();
+const multipleSelection = ref([]);
 const columns: TableColumnList = [
+  {
+    type: "selection",
+    align: "left"
+  },
   {
     label: "报警编号",
     prop: "emergencyAlarmId"
