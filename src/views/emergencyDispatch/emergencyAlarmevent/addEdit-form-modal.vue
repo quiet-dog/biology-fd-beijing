@@ -91,7 +91,7 @@ const visible = computed({
 });
 
 function handleConfirm() {
-  if (props.row == 'add') {
+  if (props.type == 'add') {
     formRef.value.validate(async callback => {
       if (callback) {
         try {
