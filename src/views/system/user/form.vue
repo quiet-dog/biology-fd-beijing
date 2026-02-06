@@ -47,7 +47,7 @@ function getFormRuleRef() {
 
 function fenpeiMima() {
   // 密码规则：用户名 @ 当前时间YYYYMMDDHHmmss
-  newFormInline.value.password = newFormInline.value.username + 
+  newFormInline.value.password = "Sw"+ newFormInline.value.username + 
     "@" + new Date().toISOString().replace(/[-T:.Z]/g, "").slice(0, 14);
     console.log("分配的密码为：", newFormInline.value.password);
 }

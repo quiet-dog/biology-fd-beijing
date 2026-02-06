@@ -69,8 +69,8 @@
           <!-- <template #handlers="{ row }">
             <span v-for="item in row.handlers">{{ item.name }}</span>
           </template> -->
-          <template #status="{row}">
-            <span>{{ row.status ? "已处置":"未处置" }}</span>
+          <template #status="{ row }">
+            <span>{{ row.status ? "已处置" : "未处置" }}</span>
           </template>
           <template #type="{ row }">
             {{ row.type ?? "--" }}
@@ -86,6 +86,16 @@
               查看
             </el-button>
 
+             <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="openDialogDetail('update', row)"
+            >
+              修改
+            </el-button>
+
             <el-button
               class="reset-margin"
               link
@@ -93,7 +103,7 @@
               :size="size"
               @click="openDialog('update', row)"
             >
-              修改
+              处置
             </el-button>
           </template>
         </pure-table>
@@ -105,6 +115,9 @@
       :type="opType"
       @success="onSearch(tableRef)"
     />
+    <addEditFormModalDetail v-model="modalDetailVisible" :row="opRow"
+      :type="opType"
+      @success="onSearch(tableRef)" />
     <detailFormModal ref="detailForModalRef" />
   </div>
 </template>
@@ -124,6 +137,8 @@ import detailFormModal from "./detail-from-modal.vue";
 import { Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
 import { Plus, Refresh, Search, Download } from "@element-plus/icons-vue";
+import addEditFormModalDetail from "./addEdit-form-modal-detail.vue";
+
 
 const tableRef = ref();
 const columns: TableColumnList = [
@@ -146,7 +161,7 @@ const columns: TableColumnList = [
   },
   {
     label: "处理人员",
-    prop: "handlerNames",
+    prop: "handlerNames"
     // slot: "handlers"
   },
   {
@@ -156,7 +171,7 @@ const columns: TableColumnList = [
   {
     label: "是否处置",
     prop: "status",
-    slot:"status"
+    slot: "status"
   },
   {
     label: "操作",
@@ -206,11 +221,18 @@ const archiveListFun = async () => {
 
 const opType = ref<"add" | "update">("add");
 const modalVisible = ref(false);
-const opRow = ref()
-function openDialog(type: "add" | "update",row) {
+const modalDetailVisible = ref(false);
+const opRow = ref();
+function openDialog(type: "add" | "update", row) {
   opType.value = type;
   opRow.value = row;
   modalVisible.value = true;
+}
+
+function openDialogDetail(type: "add" | "update", row) {
+  opType.value = type;
+  opRow.value = row;
+  modalDetailVisible.value = true;
 }
 
 const detailForModalRef = ref();

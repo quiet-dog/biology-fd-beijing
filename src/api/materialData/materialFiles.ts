@@ -37,6 +37,14 @@ export function materialFilesList(params: materialFilesListRes) {
   return http.request("get", "/manage/materials", { params });
 }
 
+export function deleteMaterials(ids: number[]) {
+  return http.request("delete", "/manage/materials", {
+    params: {
+      materialsIds: ids.join(",")
+    }
+  });
+}
+
 export interface AddStock {
   materialsId: number;
   stock: number;

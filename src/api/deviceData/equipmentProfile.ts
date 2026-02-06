@@ -36,6 +36,10 @@ export function equipmentList(params: equipmentListRes) {
   return http.request("get", "/manage/equipment", { params });
 }
 
+export function allEquipmentList() {
+  return http.request("get", "/manage/equipment/all",);
+}
+
 //下载导入模板
 export function downloadTemplate() {
   return http.request(

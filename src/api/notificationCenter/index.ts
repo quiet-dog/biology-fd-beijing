@@ -18,12 +18,11 @@ export interface notificationListRes extends BasePageQuery {
   pageSize: number;
   isPersonal: boolean;
   userId?: number;
-  isNotRead?: boolean
+  isNotRead?: boolean;
 }
 export function notificationList(params: notificationListRes) {
   return http.request("get", "/manage/notification", { params });
 }
-
 
 //删除通知
 export const deletenode = (data: Array<number>) => {
@@ -45,4 +44,4 @@ export const createAppNotification = (data: any) => {
   return http.request("post", "/manage/notification", {
     data
   });
-}
+};

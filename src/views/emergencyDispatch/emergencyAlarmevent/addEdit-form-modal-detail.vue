@@ -91,7 +91,7 @@ const visible = computed({
 });
 
 function handleConfirm() {
-  if (props.type == 'add') {
+  if (props.row == 'add') {
     formRef.value.validate(async callback => {
       if (callback) {
         try {
@@ -207,7 +207,7 @@ const loadAlarm = () => {
       <el-row>
         <el-col :span="12">
           <el-form-item label="事件名称：" prop="eventName">
-            <el-input :disabled="type !== 'add'" v-model="formData.eventName" autocomplete="off" placeholder="请输入事件名称"
+            <el-input  v-model="formData.eventName" autocomplete="off" placeholder="请输入事件名称"
               style="width: 300px" />
           </el-form-item>
         </el-col>
@@ -228,7 +228,7 @@ const loadAlarm = () => {
       <el-row>
         <el-col :span="12">
           <el-form-item label="事件类型：" prop="type">
-            <el-select :disabled="type !== 'add'" v-model="formData.type" placeholder="请选择事件类型" style="width: 300px">
+            <el-select v-model="formData.type" placeholder="请选择事件类型" style="width: 300px">
               <el-option label="政策法规类" value="政策法规类" />
               <el-option label="设备报警类" value="设备报警类" />
               <el-option label="环境报警类" value="环境报警类" />
@@ -237,7 +237,7 @@ const loadAlarm = () => {
         </el-col>
       </el-row>
       <el-form-item label="事件内容：" prop="content">
-        <el-input :disabled="type !== 'add'" v-model="formData.content" autocomplete="off" placeholder="请输入事件内容"
+        <el-input  v-model="formData.content" autocomplete="off" placeholder="请输入事件内容"
           :rows="2" type="textarea" style="width: 760px" />
       </el-form-item>
       <el-form-item label="处理流程：" prop="processingFlow">
@@ -245,7 +245,7 @@ const loadAlarm = () => {
           style="width: 760px" />
       </el-form-item>
       <el-form-item label="报警信息：">
-        <el-select :disabled="type !== 'add'" placeholder="请选择报警信息" multiple v-model="formData.emergencyAlarmIds"
+        <el-select placeholder="请选择报警信息" multiple v-model="formData.emergencyAlarmIds"
           style="width: 760px">
           <div v-infinite-scroll="loadAlarm">
             <el-option v-for="item in dataList2" :key="item.emergencyAlarmId"
@@ -254,9 +254,9 @@ const loadAlarm = () => {
           </div>
         </el-select>
       </el-form-item>
-      <el-form-item label="是否处置：">
+      <!-- <el-form-item label="是否处置：">
         <el-switch v-model="formData.status" />
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
   </v-dialog>
 </template>

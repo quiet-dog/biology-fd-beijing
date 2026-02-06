@@ -598,7 +598,11 @@ const toPath = item => {
                         <ElTableColumn prop="doorPlace" label="出勤地点" />
                         <ElTableColumn prop="doorDate" label="出勤时间">
                           <template #default="{ row }">
-                            {{ row.doorDate ? dayjs(row.doorDate).format("HH:mm:ss"):"--" }}
+                            {{
+                              row.doorDate
+                                ? dayjs(row.doorDate).format("HH:mm:ss")
+                                : "--"
+                            }}
                           </template>
                         </ElTableColumn>
                       </ElTable>

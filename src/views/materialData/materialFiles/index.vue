@@ -67,6 +67,9 @@
             <el-button class="reset-margin" link type="primary" :size="size" @click="thresholdSettingClick(row)">
               阈值设置
             </el-button>
+            <el-button class="reset-margin" link type="danger" :size="size" @click="deleteRow(row)">
+              删除
+            </el-button>
           </template>
         </pure-table>
       </template>
@@ -87,7 +90,8 @@ import {
   materialFilesListRes,
   materialFilesList,
   addStock,
-  exportMaterialEvents
+  exportMaterialEvents,
+  deleteMaterials
 } from "@/api/materialData/materialFiles";
 import detailFromModal from "./detail-from-modal.vue";
 import importFormModal from "./import-form-modal.vue";
@@ -154,7 +158,7 @@ const columns: TableColumnList = [
     label: "操作",
     slot: "operation",
     fixed: "right",
-    width: 200
+    width: 250
   }
 ];
 
@@ -247,6 +251,13 @@ const thresholdSettingClick = row => {
   opRow.value = row;
   modalVisible.value = true;
 };
+
+const deleteRow = row => {
+  deleteMaterials([row.materialsId]).then(res => {
+    ElMessage.success("删除成功")
+    archiveListFun()
+  })
+}
 
 //导入
 const importRef = ref();

@@ -48,10 +48,11 @@
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
     >
-
-    <template #buttons>
-      <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
-    </template>
+      <template #buttons>
+        <el-button type="primary" :icon="Plus" @click="openDialog('add')"
+          >新增</el-button
+        >
+      </template>
       <template v-slot="{ size, dynamicColumns }">
         <pure-table
           ref="tableRef"
@@ -137,7 +138,13 @@ import {
 import detailFromModal from "./detail-from-modal.vue";
 import { Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
-import { Plus, Refresh, Search, Star, StarFilled } from "@element-plus/icons-vue";
+import {
+  Plus,
+  Refresh,
+  Search,
+  Star,
+  StarFilled
+} from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { ElMessage, ElMessageBox } from "element-plus";
 import AddFormModal from "./add-from-modal.vue";
@@ -299,7 +306,6 @@ function openDialog(type: "add") {
   opType.value = type;
   AddModalVisible.value = true;
 }
-
 
 onMounted(() => {
   archiveListFun();
